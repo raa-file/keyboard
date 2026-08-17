@@ -197,8 +197,11 @@
 
   .word-field{
     font-size:clamp(19px,2.6vw,25px); line-height:2.1; letter-spacing:.3px;
-    background:var(--panel-2); border-radius:14px; padding:20px 22px; max-height:6.4em; overflow:hidden;
+    background:var(--panel-2); border-radius:14px; padding:20px 22px; max-height:13em; overflow-y:auto;
     word-spacing:8px; text-align:right; direction:rtl; border:1px solid var(--border);
+  }
+  @media (max-width:640px){
+    .word-field{font-size:17px; line-height:2; max-height:9em; padding:16px;}
   }
   .word-field .w{padding:2px 3px; border-radius:5px; color:#a6ac9e;}
   .word-field .w .ch.correct{color:var(--accent-dim);}
@@ -333,6 +336,8 @@
           <div id="minute-rows"></div>
         </div>
         <button class="btn brass" id="restart-speed-btn">محاولة جديدة</button>
+        <button class="btn ghost" id="share-result-btn" style="margin-right:8px;">📤 مشاركة النتيجة</button>
+        <div class="hint" id="share-hint" style="margin-top:10px; display:none;"></div>
       </div>
     </div>
   </div>
@@ -642,6 +647,8 @@ let elapsed = 0;
 let started = false;
 let minuteSnapshots = []; // cumulative correct words at each minute boundary
 let lastMinuteMark = 0;
+let lastFinalWpm = 0;
+let lastFinalAcc = 100;
 
 function pickWords(n){
   const arr = [];
@@ -677,6 +684,8 @@ function renderWords(typed){
     html += `<span class="${cls}">${inner}</span> `;
   });
   wordFieldEl.innerHTML = html;
+  const cur = wordFieldEl.querySelector('.w.current');
+  if(cur) cur.scrollIntoView({block:'center'});
 }
 
 function resetSpeedTest(){
@@ -735,6 +744,8 @@ function endSpeedTest(){
   speedResultsEl.classList.add('show');
   const finalWpm = currentWpm();
   const acc = charsTypedTotal ? Math.round((correctCharsTotal/charsTypedTotal)*100) : 100;
+  lastFinalWpm = finalWpm;
+  lastFinalAcc = acc;
 
   document.getElementById('result-wpm').innerHTML = toArabicDigits(finalWpm) + '<small>كلمة في الدقيقة</small>';
   document.getElementById('result-acc').textContent = toArabicDigits(acc) + '٪';
@@ -793,6 +804,30 @@ durationGroup.querySelectorAll('.week-pill').forEach(btn => {
 });
 
 document.getElementById('restart-speed-btn').addEventListener('click', resetSpeedTest);
+
+const SITE_URL = 'https://raa-file.github.io/keyboard/';
+const shareBtn = document.getElementById('share-result-btn');
+const shareHint = document.getElementById('share-hint');
+
+shareBtn.addEventListener('click', async () => {
+  const text = `حصلت على ${toArabicDigits(lastFinalWpm)} كلمة/دقيقة بدقّة ${toArabicDigits(lastFinalAcc)}٪ في اختبار الكتابة على "ماهر"! جرّب تتحداني 🔥`;
+  shareHint.style.display = 'none';
+
+  if(navigator.share){
+    try{
+      await navigator.share({ title:'ماهر — اختبار السرعة', text, url: SITE_URL });
+      return;
+    }catch(e){ /* user cancelled or unsupported — fall through to copy */ }
+  }
+
+  try{
+    await navigator.clipboard.writeText(text + ' ' + SITE_URL);
+    shareHint.textContent = 'تم نسخ النتيجة والرابط — الصقيه لأصحابك في أي محادثة 📋';
+  }catch(e){
+    shareHint.textContent = text + ' — ' + SITE_URL;
+  }
+  shareHint.style.display = 'block';
+});
 
 resetSpeedTest();
 
