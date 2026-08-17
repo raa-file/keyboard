@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماهر — تعلّم الكتابة السريعة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rakkas&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --bg-soft:#f6f7f5;
+    --panel:#ffffff;
+    --panel-2:#f1f3ef;
+    --panel-3:#e6e9e3;
+    --border:#e2e5de;
+    --text:#20241f;
+    --muted:#767c71;
+    --accent:#2f9e5b;
+    --accent-dim:#1f7a44;
+    --accent-soft:#e4f4ea;
+    --rose:#c85c4d;
+    --sage:#2f9e5b;
+    --key-pinky:#dde1d8;
+    --key-ring:#c9d4c0;
+    --key-mid:#afc79f;
+    --key-idx:#8bbf7a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 550px at 12% -12%, #eef6f0 0%, transparent 55%),
+      radial-gradient(900px 480px at 108% 8%, #f2f5ee 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    min-height:100vh;
+    line-height:1.6;
+  }
+  .mono{font-family:'JetBrains Mono', monospace; direction:ltr; unicode-bidi:isolate;}
+  ::selection{background:var(--accent-soft); color:var(--accent-dim);}
+
+  /* ===== Header ===== */
+  header{
+    padding:28px clamp(16px,5vw,64px) 8px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:40px; height:40px; border-radius:10px;
+    background:linear-gradient(155deg, var(--accent), var(--accent-dim));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Rakkas', serif; font-size:22px; color:#ffffff;
+    box-shadow:0 4px 14px rgba(47,158,91,.22);
+    flex-shrink:0;
+  }
+  .brand-name{font-family:'Rakkas', serif; font-size:26px; letter-spacing:.5px;}
+  .brand-tag{color:var(--muted); font-size:12.5px; margin-top:-2px;}
+
+  nav.tabs{display:flex; gap:8px; background:var(--panel-2); padding:6px; border-radius:14px; border:1px solid var(--border);}
+  nav.tabs button{
+    appearance:none; border:none; background:transparent; color:var(--muted);
+    font-family:inherit; font-size:14.5px; font-weight:600; padding:10px 18px;
+    border-radius:10px; cursor:pointer; transition:.2s;
+  }
+  nav.tabs button.active{background:var(--accent); color:#ffffff;}
+  nav.tabs button:not(.active):hover{color:var(--text); background:#ffffff;}
+
+  /* ===== Hero ===== */
+  .hero{
+    padding:18px clamp(16px,5vw,64px) 30px;
+    display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:center;
+  }
+  @media (max-width:860px){.hero{grid-template-columns:1fr;}}
+  .hero h1{
+    font-family:'Rakkas', serif; font-weight:400;
+    font-size:clamp(30px,4.2vw,44px); line-height:1.25; margin:0 0 10px;
+  }
+  .hero h1 span{color:var(--accent);}
+  .hero p{color:var(--muted); font-size:15.5px; max-width:46ch; margin:0;}
+  .hero-stat{
+    background:var(--panel); border:1px solid var(--border); border-radius:20px;
+    padding:22px 26px; display:flex; align-items:center; justify-content:space-between; gap:18px;
+    box-shadow:0 1px 2px rgba(20,24,20,.03), 0 10px 28px rgba(20,24,20,.04);
+  }
+  .hero-stat .num{font-size:44px; font-weight:700; color:var(--accent);}
+  .hero-stat .lbl{color:var(--muted); font-size:13px; text-align:center;}
+  .hero-stat .divider{width:1px; align-self:stretch; background:var(--border);}
+
+  main{padding:0 clamp(16px,5vw,64px) 60px;}
+  .stage{display:none;}
+  .stage.active{display:block;}
+
+  /* ===== Cards ===== */
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:20px;
+    padding:22px clamp(16px,3vw,28px);
+    box-shadow:0 1px 2px rgba(20,24,20,.03), 0 10px 28px rgba(20,24,20,.03);
+  }
+  .card + .card{margin-top:18px;}
+  .card h2{font-family:'Rakkas', serif; font-weight:400; font-size:22px; margin:0 0 4px;}
+  .card .sub{color:var(--muted); font-size:13.5px; margin:0 0 16px;}
+
+  /* ===== Stage pills ===== */
+  .weeks{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .week-pill{
+    border:1px solid var(--border); background:var(--panel-2); color:var(--muted);
+    border-radius:999px; padding:8px 16px; font-size:13.5px; font-weight:600;
+    cursor:pointer; transition:.2s; font-family:inherit;
+  }
+  .week-pill .n{color:var(--accent-dim); font-family:'JetBrains Mono',monospace; margin-left:6px;}
+  .week-pill.active{background:var(--accent); color:#ffffff; border-color:var(--accent);}
+  .week-pill.active .n{color:#ffffff;}
+  .week-pill.done::after{content:' ✓'; color:var(--accent-dim);}
+  .week-pill.active.done::after{color:#ffffff;}
+
+  /* ===== Typing line ===== */
+  .type-line{
+    font-size:clamp(20px,3vw,28px); letter-spacing:.5px; line-height:2;
+    padding:22px 6px; border-radius:14px; background:var(--panel-2);
+    text-align:center; user-select:none; word-spacing:6px;
+    min-height:2.4em; border:1px solid var(--border);
+  }
+  .type-line .ch{position:relative; transition:color .1s; color:#c7cbc2;}
+  .type-line .ch.correct{color:var(--accent-dim);}
+  .type-line .ch.wrong{color:var(--rose); text-decoration:underline wavy var(--rose);}
+  .type-line .ch.pending{color:#a6ac9e;}
+  .type-line .ch.cursor::before{
+    content:''; position:absolute; right:-2px; top:8%; bottom:8%; width:2.5px;
+    background:var(--accent); border-radius:2px; animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .catch-input{
+    position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;
+  }
+  .line-wrap{position:relative; cursor:text;}
+  .hint{color:var(--muted); font-size:12.5px; text-align:center; margin-top:10px;}
+
+  .progress-row{display:flex; align-items:center; gap:14px; margin-top:16px;}
+  .progress-bar{flex:1; height:8px; border-radius:6px; background:var(--panel-3); overflow:hidden;}
+  .progress-bar > i{display:block; height:100%; background:linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius:6px; transition:width .25s;}
+  .progress-row .cnt{font-size:12.5px; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+
+  .week-complete{
+    display:none; text-align:center; padding:28px 10px;
+  }
+  .week-complete.show{display:block;}
+  .week-complete h3{font-family:'Rakkas',serif; font-size:24px; color:var(--accent-dim); margin:0 0 8px;}
+  .week-complete p{color:var(--muted); margin:0 0 16px; font-size:14px;}
+  .btn{
+    appearance:none; border:none; border-radius:12px; padding:11px 22px;
+    font-family:inherit; font-weight:700; font-size:14.5px; cursor:pointer; transition:.2s;
+  }
+  .btn.brass{background:var(--accent); color:#ffffff;}
+  .btn.brass:hover{background:var(--accent-dim);}
+  .btn.ghost{background:var(--panel-2); color:var(--text); border:1px solid var(--border);}
+  .btn.ghost:hover{border-color:var(--accent);}
+
+  /* ===== Keyboard ===== */
+  .kb-card{margin-top:18px;}
+  .kb-legend{display:flex; flex-wrap:wrap; gap:10px 16px; margin-bottom:16px; font-size:12px; color:var(--muted);}
+  .kb-legend span{display:inline-flex; align-items:center; gap:6px;}
+  .kb-legend i{width:11px; height:11px; border-radius:3px; display:inline-block; border:1px solid rgba(0,0,0,.08);}
+  .keyboard{display:flex; flex-direction:column; gap:7px; align-items:center;}
+  .krow{display:flex; gap:7px;}
+  .krow.indent-1{margin-right:18px;}
+  .krow.indent-2{margin-right:36px;}
+  .key{
+    width:46px; height:46px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-size:17px; font-weight:600; color:var(--text); position:relative; opacity:.32;
+    transition:opacity .2s, transform .08s, box-shadow .15s; border:1px solid rgba(0,0,0,.08);
+  }
+  @media (max-width:640px){.key{width:32px;height:38px;font-size:13px;border-radius:7px;} .krow{gap:4px;} .krow.indent-1{margin-right:12px;} .krow.indent-2{margin-right:24px;}}
+  .key.unlocked{opacity:1;}
+  .key.next{box-shadow:0 0 0 3px #ffffff, 0 0 0 5px var(--accent); transform:translateY(-3px);}
+  .key.press-correct{animation:pop-good .2s ease;}
+  .key.press-wrong{animation:pop-bad .2s ease;}
+  @keyframes pop-good{0%{transform:scale(1);}50%{transform:scale(1.18); box-shadow:0 0 0 4px var(--sage);}100%{transform:scale(1);}}
+  @keyframes pop-bad{0%{transform:scale(1);}50%{transform:scale(1.18); box-shadow:0 0 0 4px var(--rose);}100%{transform:scale(1);}}
+  .key.space{width:260px;}
+  @media (max-width:640px){.key.space{width:150px;}}
+  .finger-note{text-align:center; color:var(--muted); font-size:12px; margin-top:14px;}
+
+  /* ===== Speed stage ===== */
+  .speed-controls{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:16px;}
+  .duration-group{display:flex; gap:8px;}
+  .stat-strip{display:flex; gap:10px; flex-wrap:wrap;}
+  .stat-chip{
+    background:var(--panel-2); border:1px solid var(--border); border-radius:12px;
+    padding:8px 16px; text-align:center; min-width:78px;
+  }
+  .stat-chip b{display:block; font-size:20px; color:var(--accent-dim); font-family:'JetBrains Mono',monospace;}
+  .stat-chip span{font-size:11px; color:var(--muted);}
+
+  .word-field{
+    font-size:clamp(19px,2.6vw,25px); line-height:2.1; letter-spacing:.3px;
+    background:var(--panel-2); border-radius:14px; padding:20px 22px; max-height:6.4em; overflow:hidden;
+    word-spacing:8px; text-align:right; direction:rtl; border:1px solid var(--border);
+  }
+  .word-field .w{padding:2px 3px; border-radius:5px; color:#a6ac9e;}
+  .word-field .w .ch.correct{color:var(--accent-dim);}
+  .word-field .w .ch.wrong{color:var(--rose); background:rgba(200,92,77,.12); border-radius:3px;}
+  .word-field .w .ch.pending{color:#a6ac9e;}
+  .word-field .w.current{background:var(--accent-soft); outline:1.5px solid rgba(47,158,91,.35);}
+
+  .results{display:none; text-align:center; padding:10px 4px 4px;}
+  .results.show{display:block;}
+  .results .big{font-family:'Rakkas',serif; font-size:52px; color:var(--accent-dim); line-height:1;}
+  .results .big small{display:block; font-family:'IBM Plex Sans Arabic'; font-size:13px; color:var(--muted); margin-top:6px;}
+  .results-grid{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:22px 0;}
+  .results-grid .stat-chip{min-width:100px;}
+  .minute-breakdown{max-width:420px; margin:0 auto 22px; text-align:right;}
+  .minute-row{display:flex; align-items:center; gap:10px; font-size:13px; margin-bottom:8px;}
+  .minute-row .lbl{width:80px; color:var(--muted); flex-shrink:0;}
+  .minute-row .bar{flex:1; height:10px; background:var(--panel-3); border-radius:6px; overflow:hidden;}
+  .minute-row .bar > i{display:block; height:100%; background:linear-gradient(90deg,var(--accent-dim),var(--accent)); border-radius:6px;}
+  .minute-row .val{width:56px; text-align:left; font-family:'JetBrains Mono',monospace; color:var(--text); flex-shrink:0;}
+
+  footer{text-align:center; color:var(--muted); font-size:12px; padding:20px; opacity:.75;}
+  footer .credit{display:block; margin-top:8px; opacity:1;}
+  footer .credit a{color:var(--accent-dim); text-decoration:none; font-weight:600;}
+  footer .credit a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">م</div>
+    <div>
+      <div class="brand-name">ماهر</div>
+      <div class="brand-tag">تعلّم الكتابة العشارية بلمسة واحدة</div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button id="tab-learn" class="active">تعلّم الكيبورد</button>
+    <button id="tab-speed">اختبار السرعة</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>من البحث بإصبع واحدة… إلى <span>الكتابة بعشرة</span></h1>
+    <p>برنامج تدريجي موزّع على الأصابع يعلّمك مواضع الحروف على لوحة المفاتيح العربية إصبعًا بإصبع، ثم يقيس سرعتك الفعلية بالكلمة في الدقيقة.</p>
+  </div>
+  <div class="hero-stat">
+    <div><div class="num mono" id="hero-wpm">٠</div><div class="lbl">كلمة/دقيقة<br>آخر محاولة</div></div>
+    <div class="divider"></div>
+    <div><div class="num mono" id="hero-acc">—</div><div class="lbl">نسبة الدقّة</div></div>
+  </div>
+</section>
+
+<main>
+
+  <!-- ================= LEARN STAGE ================= -->
+  <div class="stage active" id="stage-learn">
+    <div class="card">
+      <h2 id="week-title">المرحلة ١ — السبّابة اليسرى</h2>
+      <p class="sub" id="week-sub">سبّابتك اليسرى هي الأكثر عملًا. ثبّت باقي أصابعك في مكانها وحرّك السبّابة فقط.</p>
+
+      <div class="weeks" id="week-pills"></div>
+
+      <div id="learn-active">
+        <div class="line-wrap" id="line-wrap" tabindex="0">
+          <div class="type-line" id="type-line"></div>
+          <input class="catch-input" id="catch-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div class="hint">اضغط على النص واكتب — الحرف التالي مضاء على اللوحة أدناه</div>
+        <div class="progress-row">
+          <span class="cnt" id="line-cnt">السطر ١ / ٦</span>
+          <div class="progress-bar"><i id="week-progress" style="width:0%"></i></div>
+        </div>
+      </div>
+
+      <div class="week-complete" id="week-complete">
+        <h3>أحسنت! أكملت هذه المرحلة 🌿</h3>
+        <p id="week-complete-msg">تدرّبت على جميع حروف هذا الإصبع. جاهز للمرحلة القادمة؟</p>
+        <button class="btn brass" id="next-week-btn">الانتقال للمرحلة التالية</button>
+        <button class="btn ghost" id="redo-week-btn" style="margin-right:8px;">إعادة هذه المرحلة</button>
+      </div>
+    </div>
+
+    <div class="card kb-card">
+      <h2>لوحة المفاتيح</h2>
+      <p class="sub">كل ظل لون يمثّل الإصبع المسؤول عن ذلك المفتاح — الحروف الخافتة لم تصل إليها بعد.</p>
+      <div class="kb-legend" id="kb-legend"></div>
+      <div class="keyboard" id="keyboard"></div>
+      <div class="finger-note">الحرف المضاء بإطار أخضر هو الحرف التالي المطلوب كتابته الآن</div>
+    </div>
+  </div>
+
+  <!-- ================= SPEED STAGE ================= -->
+  <div class="stage" id="stage-speed">
+    <div class="card">
+      <h2>اختبار السرعة</h2>
+      <p class="sub">اكتب الكلمات الظاهرة بأسرع وقت ممكن وبأعلى دقّة. يتم حساب عدد الكلمات لكل دقيقة تلقائيًا.</p>
+
+      <div class="speed-controls">
+        <div class="duration-group" id="duration-group">
+          <button class="week-pill" data-dur="30">٣٠ ثانية</button>
+          <button class="week-pill active" data-dur="60">دقيقة واحدة</button>
+          <button class="week-pill" data-dur="120">دقيقتان</button>
+          <button class="week-pill" data-dur="180">٣ دقائق</button>
+        </div>
+        <div class="stat-strip">
+          <div class="stat-chip"><b class="mono" id="live-time">٠٠:٦٠</b><span>الوقت المتبقي</span></div>
+          <div class="stat-chip"><b class="mono" id="live-wpm">٠</b><span>كلمة/دقيقة</span></div>
+          <div class="stat-chip"><b class="mono" id="live-acc">١٠٠٪</b><span>الدقّة</span></div>
+        </div>
+      </div>
+
+      <div id="speed-active">
+        <div class="line-wrap" id="speed-wrap" tabindex="0">
+          <div class="word-field" id="word-field"></div>
+          <input class="catch-input" id="speed-input" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div class="hint">اضغط داخل الصندوق فوق واكتب — يبدأ العدّ من أول حرف تكتبه</div>
+      </div>
+
+      <div class="results" id="speed-results">
+        <div class="big mono" id="result-wpm">٠<small>كلمة في الدقيقة</small></div>
+        <div class="results-grid">
+          <div class="stat-chip"><b class="mono" id="result-acc">٠٪</b><span>الدقّة</span></div>
+          <div class="stat-chip"><b class="mono" id="result-words">٠</b><span>كلمات صحيحة</span></div>
+          <div class="stat-chip"><b class="mono" id="result-chars">٠</b><span>حرف مطبوع</span></div>
+          <div class="stat-chip"><b class="mono" id="result-errors">٠</b><span>أخطاء</span></div>
+        </div>
+        <div class="minute-breakdown">
+          <div class="sub" style="text-align:center;">عدد الكلمات في كل دقيقة</div>
+          <div id="minute-rows"></div>
+        </div>
+        <button class="btn brass" id="restart-speed-btn">محاولة جديدة</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  ماهر — تدرّب كل يوم بضع دقائق، وستكتب بعشرة أصابع دون أن تنظر إلى اللوحة.
+  <span class="credit">مصمم بواسطة <a href="https://www.tiktok.com/@raa.file" target="_blank" rel="noopener">ريم الحربي</a></span>
+</footer>
+
+<script>
+(function(){
+
+/* =========================================================
+   FINGER MAP — physical QWERTY position → Arabic letter
+   ========================================================= */
+const FINGER = {
+  pinkyL:{color:'var(--key-pinky)', name:'الخنصر الأيسر'},
+  ringL: {color:'var(--key-ring)',  name:'البنصر الأيسر'},
+  midL:  {color:'var(--key-mid)',   name:'الوسطى اليسرى'},
+  idxL:  {color:'var(--key-idx)',   name:'السبّابة اليسرى'},
+  idxR:  {color:'var(--key-idx)',   name:'السبّابة اليمنى'},
+  midR:  {color:'var(--key-mid)',   name:'الوسطى اليمنى'},
+  ringR: {color:'var(--key-ring)',  name:'البنصر الأيمن'},
+  pinkyR:{color:'var(--key-pinky)', name:'الخنصر الأيمن'}
+};
+
+// rows in physical order (as printed on an Arabic 101 keyboard)
+const ROW_TOP    = [['ذ','pinkyL'],['ض','pinkyL'],['ص','ringL'],['ث','midL'],['ق','idxL'],['ف','idxL'],['غ','idxR'],['ع','idxR'],['ه','midR'],['خ','ringR'],['ح','pinkyR'],['ج','pinkyR'],['د','pinkyR']];
+const ROW_HOME   = [['ش','pinkyL'],['س','ringL'],['ي','midL'],['ب','idxL'],['ل','idxL'],['ا','idxR'],['ت','idxR'],['ن','midR'],['م','ringR'],['ك','pinkyR'],['ط','pinkyR']];
+const ROW_BOTTOM = [['ئ','pinkyL'],['ء','ringL'],['ؤ','midL'],['ر','idxL'],['لا','idxL'],['ى','idxR'],['ة','idxR'],['و','midR'],['ز','ringR'],['ظ','pinkyR']];
+const ROW_NUM    = [['١','pinkyL'],['٢','ringL'],['٣','midL'],['٤','idxL'],['٥','idxL'],['٦','idxR'],['٧','idxR'],['٨','midR'],['٩','ringR'],['٠','pinkyR']];
+
+const ALL_ROWS = [ROW_NUM, ROW_TOP, ROW_HOME, ROW_BOTTOM];
+
+/* =========================================================
+   CURRICULUM — stages by finger (progressive, cumulative)
+   ========================================================= */
+const STAGES = [
+  { title:'المرحلة ١ — السبّابة اليسرى', sub:'سبّابتك اليسرى هي الأكثر عملًا. ثبّت باقي أصابعك في مكانها وحرّك السبّابة فقط.',
+    keys:['ق','ف','ب','ل','ر'],
+    lines:['قلب فرق قفل','بر لف فقر','بقر قفر رب','فرق قفل بقر','قلب رب لف','فقر بقر قفل'] },
+  { title:'المرحلة ٢ — السبّابة اليمنى', sub:'أضفنا سبّابة اليد اليمنى. السبّابتان معًا تغطيان معظم الحروف الشائعة.',
+    keys:['ق','ف','ب','ل','ر','غ','ع','ا','ت','ى','ة'],
+    lines:['عقل علاقة بلاغ','غرفة تعب عرب','غابة فقرة عربة','تراب غار قلب','فرق عقل غابة','عربة تعب فقرة'] },
+  { title:'المرحلة ٣ — الوسطى اليسرى', sub:'انتقل خطوة للخارج. الإصبع الوسطى تتحرك بثبات أكبر من السبّابة.',
+    keys:['ث','ي','ؤ'],
+    lines:['بيت غالي غير','فيل ثقيل ثعلب','قليل غابة بيت','غير فيل ثقيل','ثعلب قليل غالي'] },
+  { title:'المرحلة ٤ — الوسطى اليمنى', sub:'أكملنا الإصبعين الوسطيين من الجهتين.',
+    keys:['ه','ن','و'],
+    lines:['نور بنت لون','هنا نبات وقت','نهر توت غنية','فرن نبيل وتر','هاتف نور نهر'] },
+  { title:'المرحلة ٥ — البنصر الأيسر', sub:'البنصر أضعف قليلًا من غيره — امنحه وقتًا أطول للتمرين.',
+    keys:['ص','س','ء'],
+    lines:['صوت سنة قصير','بستان سلة قصة','سور نص صبر','سفينة بناء صوت','قصة بستان بناء'] },
+  { title:'المرحلة ٦ — البنصر الأيمن', sub:'بنصر اليد اليمنى الآن. لاحظ الفرق البسيط في القوة بين اليدين.',
+    keys:['خ','م','ز'],
+    lines:['خير زمن خبز','موز زهرة خمسة','معلم مساء خروف','مزرعة خير موز','زهرة معلم مساء'] },
+  { title:'المرحلة ٧ — الخنصر الأيسر', sub:'الخنصر يغطي أطراف اللوحة. حركته أصغر لكنها تحتاج دقّة.',
+    keys:['ذ','ض','ش','ئ'],
+    lines:['شمس ضوء بذرة','عرض شهر ريشة','ذهب ذئب شمال','مشروع شمس ضوء','ذئب ريشة شهر'] },
+  { title:'المرحلة ٨ — الخنصر الأيمن', sub:'آخر إصبع! بعد هذه المرحلة تكون قد غطّيت الأبجدية كاملة.',
+    keys:['ح','ك','ظ','ج','د','ط'],
+    lines:['كتاب جميل حديقة','طويل ظلام كبير','جبل حليب طريق','مدينة دفتر حظ','كريم جديد طفل','حديقة طويل جبل'] },
+  { title:'المرحلة ٩ — الأرقام والترقيم', sub:'كل الأصابع تشارك الآن في كتابة الأرقام وعلامات الترقيم.',
+    keys:['١','٢','٣','٤','٥','٦','٧','٨','٩','٠'],
+    lines:['١٢٣ ٤٥٦ ٧٨٩ ٠','الساعة الآن ١٠:٣٠.','عمري ٢٥ سنة.','لدي ٣ كتب جديدة.','اليوم هو ١٧ أغسطس.','ولد في سنة ١٩٩٨.'] },
+  { title:'المرحلة ١٠ — جمل كاملة', sub:'مرحلة المراجعة الشاملة — اكتب جملًا حقيقية بكل أصابعك معًا.',
+    keys:[],
+    lines:['الصبر مفتاح الفرج.','من جدّ وجد، ومن زرع حصد.','القراءة غذاء العقل والروح.','لكل مجتهد نصيب.','العلم نور والجهل ظلام.','الوقت كالسيف إن لم تقطعه قطعك.'] }
+];
+
+/* cumulative unlocked letters up through stage i (inclusive) */
+function cumulativeKeys(i){
+  const set = new Set();
+  for(let k=0;k<=i;k++) STAGES[k].keys.forEach(ch => set.add(ch));
+  return set;
+}
+
+/* =========================================================
+   WORD BANK — for the speed test (full alphabet)
+   ========================================================= */
+const WORD_BANK = ("من في على هذا ذلك كتاب مدرسة بيت شمس قمر نجمة بحر جبل وادي صحراء مطر ريح شجرة وردة طائر سمكة حصان أسد نمر فيل قرد أرنب وقت يوم ليل نهار صباح مساء أسبوع شهر سنة عام صديق أخ أخت أم أب جد جدة ولد بنت رجل امرأة طفل معلم طالب مهندس طبيب ممرضة شرطي عامل فلاح طعام ماء خبز لبن تفاح موز برتقال عنب تمر لحم سمك أرز سكر ملح شاي قهوة مدينة قرية شارع مسجد حديقة ملعب مطعم مستشفى مكتبة سوق محل سيارة طائرة قطار سفينة دراجة حافلة طريق جسر نهر بحيرة غابة حقل زهرة عشب حجر رمل تراب نار هواء نور ظلام أحمر أزرق أخضر أصفر أسود أبيض كبير صغير طويل قصير جميل قبيح سريع بطيء قوي ضعيف سعيد حزين جديد قديم نظيف حار بارد حلو مر عمل درس لعب أكل شرب نام قرأ كتب سمع رأى تكلم ذهب جاء وقف جلس ركض قفز ضحك بكى فكر فهم تعلم علم سأل أجاب ساعد أحب أراد").split(' ');
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let weekIndex = 0;
+let lineIndex = 0;
+let completedWeeks = new Set();
+
+/* =========================================================
+   KEYBOARD RENDER
+   ========================================================= */
+const kbEl = document.getElementById('keyboard');
+const legendEl = document.getElementById('kb-legend');
+
+function buildLegend(){
+  legendEl.innerHTML = Object.values(FINGER).map(f =>
+    `<span><i style="background:${f.color}"></i>${f.name}</span>`
+  ).join('');
+}
+buildLegend();
+
+function buildKeyboard(){
+  kbEl.innerHTML = '';
+  ALL_ROWS.forEach((row, ri) => {
+    const rEl = document.createElement('div');
+    rEl.className = 'krow' + (ri===2?' indent-1':ri===3?' indent-2':'');
+    row.forEach(([ch, finger]) => {
+      const k = document.createElement('div');
+      k.className = 'key';
+      k.dataset.ch = ch;
+      k.style.background = FINGER[finger].color;
+      k.textContent = ch;
+      rEl.appendChild(k);
+    });
+    kbEl.appendChild(rEl);
+  });
+  // space bar
+  const spaceRow = document.createElement('div');
+  spaceRow.className = 'krow';
+  const space = document.createElement('div');
+  space.className = 'key space unlocked';
+  space.dataset.ch = ' ';
+  space.style.background = 'linear-gradient(90deg, var(--key-idx), var(--key-mid))';
+  space.textContent = '␣';
+  spaceRow.appendChild(space);
+  kbEl.appendChild(spaceRow);
+}
+buildKeyboard();
+
+function setUnlockedKeys(stageIdx){
+  const allowed = cumulativeKeys(stageIdx);
+  const allLettersUnlocked = STAGES[stageIdx].keys.length === 0; // review stage
+  kbEl.querySelectorAll('.key').forEach(k => {
+    if(k.dataset.ch === ' ') return;
+    k.classList.toggle('unlocked', allLettersUnlocked || allowed.has(k.dataset.ch));
+  });
+}
+
+function highlightNextKey(ch){
+  kbEl.querySelectorAll('.key').forEach(k => k.classList.remove('next'));
+  if(ch === undefined) return;
+  const target = ch === ' ' ? ' ' : ch;
+  const el = kbEl.querySelector(`.key[data-ch="${CSS.escape(target)}"]`);
+  if(el) el.classList.add('next');
+}
+
+function flashKey(ch, good){
+  const el = kbEl.querySelector(`.key[data-ch="${CSS.escape(ch)}"]`);
+  if(!el) return;
+  el.classList.remove('press-correct','press-wrong');
+  void el.offsetWidth;
+  el.classList.add(good ? 'press-correct' : 'press-wrong');
+}
+
+/* =========================================================
+   LEARN STAGE LOGIC
+   ========================================================= */
+const weekPillsEl = document.getElementById('week-pills');
+const weekTitleEl = document.getElementById('week-title');
+const weekSubEl = document.getElementById('week-sub');
+const typeLineEl = document.getElementById('type-line');
+const catchInput = document.getElementById('catch-input');
+const lineWrap = document.getElementById('line-wrap');
+const lineCntEl = document.getElementById('line-cnt');
+const weekProgressEl = document.getElementById('week-progress');
+const learnActiveEl = document.getElementById('learn-active');
+const weekCompleteEl = document.getElementById('week-complete');
+const weekCompleteMsg = document.getElementById('week-complete-msg');
+
+const ARABIC_DIGITS = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+function toArabicDigits(n){ return String(n).split('').map(d => /[0-9]/.test(d) ? ARABIC_DIGITS[+d] : d).join(''); }
+
+function buildWeekPills(){
+  weekPillsEl.innerHTML = '';
+  STAGES.forEach((w, i) => {
+    const b = document.createElement('button');
+    b.className = 'week-pill' + (i===weekIndex ? ' active':'') + (completedWeeks.has(i) ? ' done':'');
+    b.innerHTML = `مرحلة <span class="n">${toArabicDigits(i+1)}</span>`;
+    b.addEventListener('click', () => loadWeek(i));
+    weekPillsEl.appendChild(b);
+  });
+}
+
+function loadWeek(i){
+  weekIndex = i;
+  lineIndex = 0;
+  const w = STAGES[i];
+  weekTitleEl.textContent = w.title;
+  weekSubEl.textContent = w.sub;
+  setUnlockedKeys(i);
+  buildWeekPills();
+  weekCompleteEl.classList.remove('show');
+  learnActiveEl.style.display = '';
+  loadLine();
+}
+
+function loadLine(){
+  const w = STAGES[weekIndex];
+  const text = w.lines[lineIndex];
+  typeLineEl.dataset.target = text;
+  catchInput.value = '';
+  renderLine('');
+  lineCntEl.textContent = `السطر ${toArabicDigits(lineIndex+1)} / ${toArabicDigits(w.lines.length)}`;
+  weekProgressEl.style.width = (lineIndex / w.lines.length * 100) + '%';
+  highlightNextKey(text[0]);
+}
+
+function renderLine(typed){
+  const target = typeLineEl.dataset.target;
+  let html = '';
+  for(let i=0;i<target.length;i++){
+    const t = target[i];
+    let cls = 'pending';
+    if(i < typed.length){ cls = (typed[i] === t) ? 'correct' : 'wrong'; }
+    else if(i === typed.length){ cls += ' cursor'; }
+    html += `<span class="ch ${cls}">${t === ' ' ? '&nbsp;' : t}</span>`;
+  }
+  typeLineEl.innerHTML = html;
+}
+
+catchInput.addEventListener('input', () => {
+  const target = typeLineEl.dataset.target;
+  let typed = catchInput.value;
+  if(typed.length > target.length) typed = typed.slice(0, target.length);
+  renderLine(typed);
+
+  const idx = typed.length - 1;
+  if(idx >= 0){
+    const good = typed[idx] === target[idx];
+    flashKey(target[idx] === ' ' ? ' ' : target[idx], good);
+  }
+  highlightNextKey(typed.length < target.length ? target[typed.length] : undefined);
+
+  if(typed.length === target.length && typed === target){
+    setTimeout(() => advanceLine(), 220);
+  }
+});
+lineWrap.addEventListener('click', () => catchInput.focus());
+
+function advanceLine(){
+  const w = STAGES[weekIndex];
+  lineIndex++;
+  if(lineIndex >= w.lines.length){
+    completedWeeks.add(weekIndex);
+    buildWeekPills();
+    learnActiveEl.style.display = 'none';
+    weekCompleteEl.classList.add('show');
+    weekProgressEl.style.width = '100%';
+    weekCompleteMsg.textContent = (weekIndex < STAGES.length-1)
+      ? 'تدرّبت على جميع حروف هذه المرحلة. جاهز للمرحلة القادمة؟'
+      : 'أنهيت كل المراحل! جرّب الآن اختبار السرعة لقياس نتيجتك الحقيقية.';
+    document.getElementById('next-week-btn').style.display = (weekIndex < STAGES.length-1) ? '' : 'none';
+    return;
+  }
+  loadLine();
+}
+
+document.getElementById('next-week-btn').addEventListener('click', () => {
+  if(weekIndex < STAGES.length-1) loadWeek(weekIndex+1);
+});
+document.getElementById('redo-week-btn').addEventListener('click', () => loadWeek(weekIndex));
+
+buildWeekPills();
+loadWeek(0);
+
+/* =========================================================
+   TABS
+   ========================================================= */
+const tabLearn = document.getElementById('tab-learn');
+const tabSpeed = document.getElementById('tab-speed');
+const stageLearn = document.getElementById('stage-learn');
+const stageSpeed = document.getElementById('stage-speed');
+tabLearn.addEventListener('click', () => {
+  tabLearn.classList.add('active'); tabSpeed.classList.remove('active');
+  stageLearn.classList.add('active'); stageSpeed.classList.remove('active');
+});
+tabSpeed.addEventListener('click', () => {
+  tabSpeed.classList.add('active'); tabLearn.classList.remove('active');
+  stageSpeed.classList.add('active'); stageLearn.classList.remove('active');
+});
+
+/* =========================================================
+   SPEED TEST LOGIC
+   ========================================================= */
+const wordFieldEl = document.getElementById('word-field');
+const speedInput = document.getElementById('speed-input');
+const speedWrap = document.getElementById('speed-wrap');
+const speedActiveEl = document.getElementById('speed-active');
+const speedResultsEl = document.getElementById('speed-results');
+const liveTimeEl = document.getElementById('live-time');
+const liveWpmEl = document.getElementById('live-wpm');
+const liveAccEl = document.getElementById('live-acc');
+const durationGroup = document.getElementById('duration-group');
+
+let duration = 60;
+let testWords = [];
+let currentWordIdx = 0;
+let charsTypedTotal = 0;
+let correctCharsTotal = 0;
+let errorCount = 0;
+let correctWordsCount = 0;
+let timer = null;
+let elapsed = 0;
+let started = false;
+let minuteSnapshots = []; // cumulative correct words at each minute boundary
+let lastMinuteMark = 0;
+
+function pickWords(n){
+  const arr = [];
+  for(let i=0;i<n;i++) arr.push(WORD_BANK[Math.floor(Math.random()*WORD_BANK.length)]);
+  return arr;
+}
+
+function fmtTime(sec){
+  const m = Math.floor(sec/60), s = sec%60;
+  return toArabicDigits(String(m).padStart(2,'0')) + ':' + toArabicDigits(String(s).padStart(2,'0'));
+}
+
+function renderWords(typed){
+  let html = '';
+  testWords.forEach((word, wi) => {
+    let cls = 'w';
+    if(wi === currentWordIdx) cls += ' current';
+    let inner = '';
+    if(wi < currentWordIdx){
+      inner = word.split('').map(c => `<span class="ch correct">${c}</span>`).join('');
+    } else if(wi === currentWordIdx){
+      for(let i=0;i<word.length;i++){
+        let c = 'pending';
+        if(i < typed.length) c = (typed[i]===word[i]) ? 'correct' : 'wrong';
+        inner += `<span class="ch ${c}">${word[i]}</span>`;
+      }
+      if(typed.length > word.length){
+        inner += typed.slice(word.length).split('').map(c=>`<span class="ch wrong">${c}</span>`).join('');
+      }
+    } else {
+      inner = word.split('').map(c => `<span class="ch pending">${c}</span>`).join('');
+    }
+    html += `<span class="${cls}">${inner}</span> `;
+  });
+  wordFieldEl.innerHTML = html;
+}
+
+function resetSpeedTest(){
+  clearInterval(timer);
+  testWords = pickWords(220);
+  currentWordIdx = 0;
+  charsTypedTotal = 0;
+  correctCharsTotal = 0;
+  errorCount = 0;
+  correctWordsCount = 0;
+  elapsed = 0;
+  started = false;
+  minuteSnapshots = [];
+  lastMinuteMark = 0;
+  speedInput.value = '';
+  renderWords('');
+  liveTimeEl.textContent = fmtTime(duration);
+  liveWpmEl.textContent = '٠';
+  liveAccEl.textContent = '١٠٠٪';
+  speedActiveEl.style.display = '';
+  speedResultsEl.classList.remove('show');
+}
+
+function currentWpm(){
+  const minutes = Math.max(elapsed/60, 1/60);
+  return Math.round((correctCharsTotal/5) / minutes);
+}
+
+function tick(){
+  elapsed++;
+  const remaining = duration - elapsed;
+  liveTimeEl.textContent = fmtTime(Math.max(remaining,0));
+  liveWpmEl.textContent = toArabicDigits(currentWpm());
+  const acc = charsTypedTotal ? Math.round((correctCharsTotal/charsTypedTotal)*100) : 100;
+  liveAccEl.textContent = toArabicDigits(acc) + '٪';
+
+  if(elapsed - lastMinuteMark >= 60){
+    minuteSnapshots.push(correctWordsCount);
+    lastMinuteMark += 60;
+  }
+  if(remaining <= 0) endSpeedTest();
+}
+
+function startSpeedTest(){
+  started = true;
+  timer = setInterval(tick, 1000);
+}
+
+function endSpeedTest(){
+  clearInterval(timer);
+  // final partial-minute snapshot
+  if(minuteSnapshots.length === 0 || minuteSnapshots[minuteSnapshots.length-1] !== correctWordsCount){
+    minuteSnapshots.push(correctWordsCount);
+  }
+  speedActiveEl.style.display = 'none';
+  speedResultsEl.classList.add('show');
+  const finalWpm = currentWpm();
+  const acc = charsTypedTotal ? Math.round((correctCharsTotal/charsTypedTotal)*100) : 100;
+
+  document.getElementById('result-wpm').innerHTML = toArabicDigits(finalWpm) + '<small>كلمة في الدقيقة</small>';
+  document.getElementById('result-acc').textContent = toArabicDigits(acc) + '٪';
+  document.getElementById('result-words').textContent = toArabicDigits(correctWordsCount);
+  document.getElementById('result-chars').textContent = toArabicDigits(charsTypedTotal);
+  document.getElementById('result-errors').textContent = toArabicDigits(errorCount);
+
+  document.getElementById('hero-wpm').textContent = toArabicDigits(finalWpm);
+  document.getElementById('hero-acc').textContent = toArabicDigits(acc) + '٪';
+
+  const rowsEl = document.getElementById('minute-rows');
+  rowsEl.innerHTML = '';
+  let prev = 0;
+  const maxWords = Math.max(...minuteSnapshots.map((v,i)=> v - (i>0?minuteSnapshots[i-1]:0)), 1);
+  minuteSnapshots.forEach((cum, i) => {
+    const thisMinuteWords = cum - prev;
+    prev = cum;
+    const pct = Math.round((thisMinuteWords / maxWords) * 100);
+    const row = document.createElement('div');
+    row.className = 'minute-row';
+    row.innerHTML = `<span class="lbl">الدقيقة ${toArabicDigits(i+1)}</span><span class="bar"><i style="width:${pct}%"></i></span><span class="val mono">${toArabicDigits(thisMinuteWords)} كلمة</span>`;
+    rowsEl.appendChild(row);
+  });
+}
+
+speedInput.addEventListener('input', () => {
+  if(!started) startSpeedTest();
+  const raw = speedInput.value;
+
+  if(raw.endsWith(' ')){
+    const typed = raw.trim();
+    const target = testWords[currentWordIdx] || '';
+    charsTypedTotal += typed.length + 1; // + the space
+    let correctChars = 0;
+    for(let i=0;i<typed.length;i++) if(typed[i] === target[i]) correctChars++;
+    correctCharsTotal += correctChars + (typed === target ? 1 : 0);
+    if(typed === target) correctWordsCount++;
+    errorCount += Math.max(target.length, typed.length) - correctChars;
+    currentWordIdx++;
+    speedInput.value = '';
+    renderWords('');
+    return;
+  }
+  renderWords(raw);
+});
+
+speedWrap.addEventListener('click', () => speedInput.focus());
+
+durationGroup.querySelectorAll('.week-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    durationGroup.querySelectorAll('.week-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    duration = parseInt(btn.dataset.dur, 10);
+    resetSpeedTest();
+  });
+});
+
+document.getElementById('restart-speed-btn').addEventListener('click', resetSpeedTest);
+
+resetSpeedTest();
+
+})();
+</script>
+</body>
+</html>
